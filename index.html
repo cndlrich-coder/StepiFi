@@ -6,8 +6,6 @@
     <title>StepiFi Pro</title>
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- مكتبة Chart.js للرسم البياني -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -38,12 +36,12 @@
             color: var(--text-color);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 10px;
+            padding: 10px 10px 80px 10px; /* مساحة في الأسفل لشريط الملاحة */
             user-select: none;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.3s;
         }
 
         .container { width: 100%; max-width: 390px; }
@@ -65,6 +63,10 @@
             cursor: pointer;
         }
 
+        /* التحكم في التبويبات الرئيسية */
+        .page-content { display: none; }
+        .page-content.active { display: block; }
+
         /* كارت المتر المزدوج العلوي */
         .stats-header {
             display: grid;
@@ -75,7 +77,6 @@
             border-radius: 20px;
             margin-bottom: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: background-color 0.3s;
         }
         .stat-item .val { font-size: 18px; font-weight: bold; margin-top: 4px; }
         .stat-item .lbl { font-size: 11px; color: var(--subtext-color); }
@@ -92,7 +93,6 @@
             position: relative;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             margin-bottom: 12px;
-            transition: background-color 0.3s;
         }
 
         .circle-container {
@@ -136,7 +136,7 @@
         .circle-inner .steps-count { font-size: 34px; font-weight: 800; color: var(--accent-blue); }
         .circle-inner .points-lbl { font-size: 14px; font-weight: bold; color: #eab308; margin-top: 2px; }
 
-        /* الأزرار التحكمية */
+        /* أزرار التحكم */
         .controls-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -151,9 +151,7 @@
             font-size: 12px;
             cursor: pointer;
             color: #fff;
-            transition: transform 0.1s;
         }
-        .btn-act:active { transform: scale(0.98); }
         .btn-gps { background: #10b981; }
         .btn-sensor { background: #a855f7; }
         .btn-sim { background: var(--accent-blue); color: #0f172a; grid-column: span 2; }
@@ -169,25 +167,60 @@
             margin-bottom: 12px;
         }
 
-        /* الرسم البياني الأسبوعي */
-        .chart-card {
+        /* --- تصميم شاشة التحليلات الإحصائية (المأخوذة من الصورة) --- */
+        .period-filter {
+            display: flex;
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 12px;
-            height: 150px;
-            margin-bottom: 12px;
-            transition: background-color 0.3s;
+            border-radius: 12px;
+            padding: 3px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+        .period-btn {
+            flex: 1;
+            padding: 8px 4px;
+            border: none;
+            background: transparent;
+            color: var(--subtext-color);
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .period-btn.active {
+            background: var(--accent-blue);
+            color: #0f172a;
         }
 
-        /* المتصدرين */
-        .leaderboard {
+        .analytics-summary {
+            display: flex;
+            justify-content: space-around;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .analytics-box .title { font-size: 12px; color: var(--subtext-color); margin-bottom: 5px; }
+        .analytics-box .val { font-size: 26px; font-weight: 800; color: var(--accent-blue); }
+
+        .chart-full-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 15px;
+            height: 250px;
+            margin-bottom: 15px;
+        }
+
+        /* المتصدرين والأوسمة */
+        .leaderboard, .badges-card {
             background-color: var(--card-bg);
             border-radius: 20px;
             padding: 14px;
             margin-bottom: 12px;
-            transition: background-color 0.3s;
         }
-        .leaderboard h3 { color: #eab308; text-align: center; margin: 0 0 10px 0; font-size: 14px; }
+        .leaderboard h3, .badges-card h3 { color: #eab308; text-align: center; margin: 0 0 10px 0; font-size: 14px; }
         .player-row {
             display: flex;
             justify-content: space-between;
@@ -197,14 +230,6 @@
         }
         .my-score { color: var(--accent-blue); font-weight: bold; }
 
-        /* الأوسمة */
-        .badges-card {
-            background-color: var(--card-bg);
-            padding: 14px;
-            border-radius: 20px;
-            transition: background-color 0.3s;
-        }
-        .badges-card h3 { text-align: center; margin: 0 0 10px 0; font-size: 14px; }
         .badges-grid { display: flex; justify-content: space-around; }
         .badge-item {
             background: var(--stat-bg);
@@ -213,11 +238,38 @@
             text-align: center;
             opacity: 0.3;
             width: 70px;
-            transition: all 0.3s;
         }
         .badge-icon { font-size: 20px; }
         .badge-name { font-size: 9px; margin-top: 4px; }
         .badge-unlocked { opacity: 1; border: 2px solid #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+
+        /* شريط التنقل السفلي (Bottom Navigation Bar) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--subtext-color);
+            font-size: 10px;
+            text-decoration: none;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        .nav-item .icon { font-size: 18px; margin-bottom: 2px; }
+        .nav-item.active { color: var(--accent-blue); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -227,6 +279,7 @@
     <!-- الشريط العلوي (اللغات والنمط) -->
     <div class="top-bar">
         <button class="top-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+        <span style="font-weight: bold; font-size: 16px;">StepiFi</span>
         <select class="top-btn" id="langSelect" onchange="changeLanguage(this.value)">
             <option value="ar">العربية 🇸🇦</option>
             <option value="fr">Français 🇫🇷</option>
@@ -234,78 +287,122 @@
         </select>
     </div>
 
-    <!-- الإحصائيات العلوية الثلاثية -->
-    <div class="stats-header">
-        <div class="stat-item">
-            <div class="lbl" id="t-lbl-cal">السعرات</div>
-            <div class="val c-orange" id="calories">0</div>
+    <!-- الصفحة 1: الرئيسية 🏠 -->
+    <div id="page-home" class="page-content active">
+        <!-- الإحصائيات العلوية الثلاثية -->
+        <div class="stats-header">
+            <div class="stat-item">
+                <div class="lbl" id="t-lbl-cal">السعرات</div>
+                <div class="val c-orange" id="calories">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="lbl" id="t-lbl-time">وقت النشاط</div>
+                <div class="val c-green" id="activeTime">0m</div>
+            </div>
+            <div class="stat-item">
+                <div class="lbl" id="t-lbl-dist">المسافة (Km)</div>
+                <div class="val c-blue" id="distance">0.0</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="lbl" id="t-lbl-time">وقت النشاط</div>
-            <div class="val c-green" id="activeTime">0m</div>
-        </div>
-        <div class="stat-item">
-            <div class="lbl" id="t-lbl-dist">المسافة (Km)</div>
-            <div class="val c-blue" id="distance">0.0</div>
-        </div>
-    </div>
 
-    <!-- الحلقة الدائرية العداد -->
-    <div class="ring-card">
-        <div class="circle-container">
-            <svg>
-                <circle class="circle-bg" cx="100" cy="100" r="85"></circle>
-                <circle class="circle-progress" id="progressRing" cx="100" cy="100" r="85"></circle>
-            </svg>
-            <div class="circle-inner">
-                <div class="today" id="t-today">اليوم 📅</div>
-                <div class="steps-count" id="steps">0</div>
-                <div class="points-lbl" id="points">0 🪙</div>
+        <!-- الحلقة الدائرية العداد -->
+        <div class="ring-card">
+            <div class="circle-container">
+                <svg>
+                    <circle class="circle-bg" cx="100" cy="100" r="85"></circle>
+                    <circle class="circle-progress" id="progressRing" cx="100" cy="100" r="85"></circle>
+                </svg>
+                <div class="circle-inner">
+                    <div class="today" id="t-today">اليوم 📅</div>
+                    <div class="steps-count" id="steps">0</div>
+                    <div class="points-lbl" id="points">0 🪙</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- أزرار التحكم -->
+        <div class="controls-grid">
+            <button class="btn-act btn-gps" id="gpsBtn" onclick="toggleGPS()">تتبع GPS 📍</button>
+            <button class="btn-act btn-sensor" id="sensorBtn" onclick="toggleSensor()">مستشعر الحركة 📱</button>
+            <button class="btn-act btn-sim" id="t-sim-btn" onclick="addSteps(1000)">محاكاة (+1000 خطوة) 🏃‍♂️</button>
+        </div>
+        <button class="reset-btn" id="t-reset-btn" onclick="resetData()">إعادة ضبط العداد</button>
+
+        <!-- أوسمة الإنجاز -->
+        <div class="badges-card">
+            <h3 id="t-badges-title">🏅 أوسمة الإنجاز</h3>
+            <div class="badges-grid">
+                <div class="badge-item" id="badge-1">
+                    <div class="badge-icon">👣</div>
+                    <div class="badge-name" id="t-badge1">الخطوة الأولى</div>
+                </div>
+                <div class="badge-item" id="badge-2">
+                    <div class="badge-icon">🎯</div>
+                    <div class="badge-name" id="t-badge2">الهدف اليومي</div>
+                </div>
+                <div class="badge-item badge-unlocked">
+                    <div class="badge-icon">🔥</div>
+                    <div class="badge-name" id="t-badge3">المثابر</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- أزرار التحكم -->
-    <div class="controls-grid">
-        <button class="btn-act btn-gps" id="gpsBtn" onclick="toggleGPS()">تتبع GPS 📍</button>
-        <button class="btn-act btn-sensor" id="sensorBtn" onclick="toggleSensor()">مستشعر الحركة 📱</button>
-        <button class="btn-act btn-sim" id="t-sim-btn" onclick="addSteps(1000)">محاكاة (+1000 خطوة) 🏃‍♂️</button>
-    </div>
-    <button class="reset-btn" id="t-reset-btn" onclick="resetData()">إعادة ضبط العداد</button>
+    <!-- الصفحة 2: التحليلات الإحصائية المفصلة 📊 (مطابقة للصورة) -->
+    <div id="page-analytics" class="page-content">
+        <!-- تصفية الفترات الزمنية -->
+        <div class="period-filter">
+            <button class="period-btn active" onclick="setPeriod('7d', this)" id="t-p-7d">7 أيام</button>
+            <button class="period-btn" onclick="setPeriod('30d', this)" id="t-p-30d">30 يوم</button>
+            <button class="period-btn" onclick="setPeriod('6m', this)" id="t-p-6m">6 أشهر</button>
+            <button class="period-btn" onclick="setPeriod('1y', this)" id="t-p-1y">1 سنة</button>
+        </div>
 
-    <!-- الرسم البياني الأسبوعي -->
-    <div class="chart-card">
-        <canvas id="miniChart"></canvas>
-    </div>
+        <!-- ملخص المعدل والمجموع -->
+        <div class="analytics-summary">
+            <div class="analytics-box">
+                <div class="title" id="t-lbl-avg">المعدل اليومي</div>
+                <div class="val" id="analyticsAvg">0</div>
+            </div>
+            <div class="analytics-box">
+                <div class="title" id="t-lbl-total">المجموع الكلي</div>
+                <div class="val" id="analyticsTotal">0</div>
+            </div>
+        </div>
 
-    <!-- قائمة المتصدرين -->
-    <div class="leaderboard">
-        <h3 id="t-lb-title">🏆 المتصدرون أسبوعياً</h3>
-        <div class="player-row"><span>🥇 Amine</span><span>250 🪙</span></div>
-        <div class="player-row"><span>🥈 Sarah</span><span>180 🪙</span></div>
-        <div class="player-row my-score"><span id="t-user-row">🥉 أنت (حسابك)</span><span id="user-lb">0 🪙</span></div>
-        <div class="player-row"><span>4. Karim</span><span>100 🪙</span></div>
-    </div>
-
-    <!-- أوسمة الإنجاز -->
-    <div class="badges-card">
-        <h3 id="t-badges-title">🏅 أوسمة الإنجاز</h3>
-        <div class="badges-grid">
-            <div class="badge-item" id="badge-1">
-                <div class="badge-icon">👣</div>
-                <div class="badge-name" id="t-badge1">الخطوة الأولى</div>
-            </div>
-            <div class="badge-item" id="badge-2">
-                <div class="badge-icon">🎯</div>
-                <div class="badge-name" id="t-badge2">الهدف اليومي</div>
-            </div>
-            <div class="badge-item badge-unlocked">
-                <div class="badge-icon">🔥</div>
-                <div class="badge-name" id="t-badge3">المثابر</div>
-            </div>
+        <!-- رسم بياني بالأعمدة تفاعلي -->
+        <div class="chart-full-card">
+            <canvas id="barChart"></canvas>
         </div>
     </div>
 
+    <!-- الصفحة 3: المتصدرين 🏆 -->
+    <div id="page-leaderboard" class="page-content">
+        <div class="leaderboard">
+            <h3 id="t-lb-title">🏆 المتصدرون أسبوعياً</h3>
+            <div class="player-row"><span>🥇 Amine</span><span>250 🪙</span></div>
+            <div class="player-row"><span>🥈 Sarah</span><span>180 🪙</span></div>
+            <div class="player-row my-score"><span id="t-user-row">🥉 أنت (حسابك)</span><span id="user-lb">0 🪙</span></div>
+            <div class="player-row"><span>4. Karim</span><span>100 🪙</span></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- شريط التنقل السفلي -->
+<div class="bottom-nav">
+    <button class="nav-item active" onclick="switchPage('home', this)">
+        <span class="icon">🏠</span>
+        <span id="t-nav-home">الرئيسية</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('analytics', this)">
+        <span class="icon">📊</span>
+        <span id="t-nav-analytics">نظرة عامة</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('leaderboard', this)">
+        <span class="icon">🏆</span>
+        <span id="t-nav-lb">المتصدرون</span>
+    </button>
 </div>
 
 <script>
@@ -319,7 +416,8 @@
     let watchID = null;
     let lastLat = null, lastLon = null;
     let lastAccel = 0;
-    let miniChart = null;
+    let barChart = null;
+    let currentPeriod = '7d';
 
     const GOAL_STEPS = 10000;
     const CIRCLE_RADIUS = 85;
@@ -343,8 +441,11 @@
             badge1: "الخطوة الأولى",
             badge2: "الهدف اليومي",
             badge3: "المثابر",
-            confirmReset: "هل تريد إعادة ضبط العداد للصفر؟",
-            chartDays: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'اليوم']
+            avgLbl: "المعدل",
+            totalLbl: "المجموع",
+            p7d: "7 أيام", p30d: "30 يوم", p6m: "6 أشهر", p1y: "1 سنة",
+            navHome: "الرئيسية", navAnalytics: "نظرة عامة", navLb: "المتصدرون",
+            confirmReset: "هل تريد إعادة ضبط العداد للصفر؟"
         },
         fr: {
             cal: "Calories",
@@ -363,8 +464,11 @@
             badge1: "Premier Pas",
             badge2: "Objectif Jour",
             badge3: "Persévérant",
-            confirmReset: "Voulez-vous réinitialiser les données ?",
-            chartDays: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Aujourd.']
+            avgLbl: "Moyenne",
+            totalLbl: "Total",
+            p7d: "7 Jours", p30d: "30 Jours", p6m: "6 Mois", p1y: "1 An",
+            navHome: "Maison", navAnalytics: "Aperçus", navLb: "Ligue",
+            confirmReset: "Voulez-vous réinitialiser les données ?"
         },
         en: {
             cal: "Calories",
@@ -383,10 +487,25 @@
             badge1: "First Step",
             badge2: "Daily Goal",
             badge3: "Persistent",
-            confirmReset: "Do you want to reset all data?",
-            chartDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Today']
+            avgLbl: "Average",
+            totalLbl: "Total",
+            p7d: "7 Days", p30d: "30 Days", p6m: "6 Months", p1y: "1 Year",
+            navHome: "Home", navAnalytics: "Analytics", navLb: "League",
+            confirmReset: "Do you want to reset all data?"
         }
     };
+
+    function switchPage(pageId, btnElement) {
+        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById('page-' + pageId).classList.add('active');
+        btnElement.classList.add('active');
+
+        if(pageId === 'analytics') {
+            initBarChart();
+        }
+    }
 
     function applyTheme() {
         if (isDarkMode) {
@@ -396,7 +515,7 @@
             document.body.classList.add('light-mode');
             document.getElementById('themeBtn').innerText = "☀️ Light";
         }
-        if(miniChart) initMiniChart();
+        if (barChart) initBarChart();
     }
 
     function toggleTheme() {
@@ -425,10 +544,21 @@
         document.getElementById('t-badge2').innerText = t.badge2;
         document.getElementById('t-badge3').innerText = t.badge3;
 
+        document.getElementById('t-lbl-avg').innerText = t.avgLbl;
+        document.getElementById('t-lbl-total').innerText = t.totalLbl;
+        document.getElementById('t-p-7d').innerText = t.p7d;
+        document.getElementById('t-p-30d').innerText = t.p30d;
+        document.getElementById('t-p-6m').innerText = t.p6m;
+        document.getElementById('t-p-1y').innerText = t.p1y;
+
+        document.getElementById('t-nav-home').innerText = t.navHome;
+        document.getElementById('t-nav-analytics').innerText = t.navAnalytics;
+        document.getElementById('t-nav-lb').innerText = t.navLb;
+
         document.getElementById('gpsBtn').innerText = isGPSActive ? t.gpsStop : t.gpsStart;
         document.getElementById('sensorBtn').innerText = isSensoring ? t.sensorStop : t.sensorStart;
 
-        if (miniChart) initMiniChart();
+        if (barChart) initBarChart();
     }
 
     function updateUI() {
@@ -455,10 +585,7 @@
         if (currentSteps >= GOAL_STEPS) { document.getElementById('badge-2').classList.add('badge-unlocked'); }
         else { document.getElementById('badge-2').classList.remove('badge-unlocked'); }
 
-        if (miniChart) {
-            miniChart.data.datasets[0].data[6] = currentSteps;
-            miniChart.update();
-        }
+        if (barChart) { initBarChart(); }
     }
 
     function addSteps(count) {
@@ -467,6 +594,68 @@
         localStorage.setItem('stepifi_steps', currentSteps);
         localStorage.setItem('stepifi_dist', totalDistance);
         updateUI();
+    }
+
+    /* إعداد الرسوم البيانية لفترات متعددة (مطابقة للصورة) */
+    function setPeriod(period, btn) {
+        currentPeriod = period;
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        initBarChart();
+    }
+
+    function initBarChart() {
+        const ctx = document.getElementById('barChart').getContext('2d');
+        const textColor = isDarkMode ? '#ffffff' : '#0f172a';
+        const gridColor = isDarkMode ? '#334155' : '#e2e8f0';
+
+        let labels = [];
+        let data = [];
+
+        if (currentPeriod === '7d') {
+            labels = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'اليوم'];
+            data = [3100, 2400, 4200, 1500, 2800, 3900, currentSteps];
+        } else if (currentPeriod === '30d') {
+            labels = ['أسبوع 1', 'أسبوع 2', 'أسبوع 3', 'هذا الأسبوع'];
+            data = [28000, 35000, 22000, (17900 + currentSteps)];
+        } else if (currentPeriod === '6m') {
+            labels = ['أبريل', 'ماي', 'يونيو', 'يوليو', 'غشت', 'شتنبر'];
+            data = [120000, 145000, 98000, 160000, 130000, (80000 + currentSteps)];
+        } else if (currentPeriod === '1y') {
+            labels = ['2023', '2024'];
+            data = [1450000, (800000 + currentSteps)];
+        }
+
+        // حساب المجموع والمعدل
+        let total = data.reduce((a, b) => a + b, 0);
+        let avg = Math.round(total / data.length);
+
+        document.getElementById('analyticsAvg').innerText = avg.toLocaleString();
+        document.getElementById('analyticsTotal').innerText = total.toLocaleString();
+
+        if (barChart) barChart.destroy();
+
+        barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: '#38bdf8',
+                    borderRadius: 8,
+                    barThickness: currentPeriod === '7d' ? 22 : 16
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } },
+                    y: { ticks: { color: textColor }, grid: { color: gridColor } }
+                }
+            }
+        });
     }
 
     function toggleGPS() {
@@ -541,37 +730,6 @@
         let total = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
         if (Math.abs(total - lastAccel) > 11) { addSteps(1); }
         lastAccel = total;
-    }
-
-    function initMiniChart() {
-        const ctx = document.getElementById('miniChart').getContext('2d');
-        const textColor = isDarkMode ? '#94a3b8' : '#64748b';
-
-        if (miniChart) miniChart.destroy();
-
-        miniChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: translations[currentLang].chartDays,
-                datasets: [{
-                    data: [1200, 3100, 2500, 4200, 1800, 2900, currentSteps],
-                    borderColor: '#38bdf8',
-                    borderWidth: 3,
-                    tension: 0.4,
-                    pointRadius: 3,
-                    pointBackgroundColor: '#38bdf8'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } },
-                    y: { display: false }
-                }
-            }
-        });
     }
 
     function resetData() {
