@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="fr" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -283,11 +283,11 @@
     
     <!-- الشريط العلوي -->
     <div class="top-bar">
-        <button class="top-btn" onclick="toggleTheme()" id="themeBtn">☀️ Light</button>
+        <button class="top-btn" onclick="toggleTheme()" id="themeBtn">☀️ Clair</button>
         <span style="font-weight: 800; font-size: 17px; color: var(--accent-blue);">StepiFi</span>
         <select class="top-btn" id="langSelect" onchange="changeLanguage(this.value)">
-            <option value="ar">العربية 🇸🇦</option>
             <option value="fr">Français 🇫🇷</option>
+            <option value="ar">العربية 🇸🇦</option>
             <option value="en">English 🇬🇧</option>
         </select>
     </div>
@@ -296,15 +296,15 @@
     <div id="page-home" class="page-content active">
         <div class="stats-header">
             <div class="stat-item">
-                <div class="lbl" id="t-lbl-cal">السعرات</div>
+                <div class="lbl" id="t-lbl-cal">Calories</div>
                 <div class="val c-orange" id="calories">0</div>
             </div>
             <div class="stat-item">
-                <div class="lbl" id="t-lbl-time">وقت النشاط</div>
+                <div class="lbl" id="t-lbl-time">Temps Actif</div>
                 <div class="val c-green" id="activeTime">0m</div>
             </div>
             <div class="stat-item">
-                <div class="lbl" id="t-lbl-dist">المسافة (Km)</div>
+                <div class="lbl" id="t-lbl-dist">Distance (Km)</div>
                 <div class="val c-blue" id="distance">0.0</div>
             </div>
         </div>
@@ -316,35 +316,35 @@
                     <circle class="circle-progress" id="progressRing" cx="105" cy="105" r="90"></circle>
                 </svg>
                 <div class="circle-inner">
-                    <div class="today" id="t-today">اليوم 📅</div>
+                    <div class="today" id="t-today">Aujourd'hui 📅</div>
                     <div class="steps-count" id="steps">0</div>
-                    <div class="goal-lbl" id="t-goal">الهدف: 10,000</div>
-                    <div class="status-lbl" id="t-status">مستوى النشاط: غير نشط</div>
+                    <div class="goal-lbl" id="t-goal">Objectif: 10 000</div>
+                    <div class="status-lbl" id="t-status">Niveau d'activité: Inactif</div>
                 </div>
             </div>
         </div>
 
         <div class="controls-grid">
-            <button class="btn-act btn-gps" id="gpsBtn" onclick="toggleGPS()">تتبع GPS 📍</button>
-            <button class="btn-act btn-sensor" id="sensorBtn" onclick="toggleSensor()">مستشعر الحركة 📱</button>
-            <button class="btn-act btn-sim" id="t-sim-btn" onclick="addSteps(1000)">محاكاة (+1000 خطوة) 🏃‍♂️</button>
+            <button class="btn-act btn-gps" id="gpsBtn" onclick="toggleGPS()">Suivi GPS 📍</button>
+            <button class="btn-act btn-sensor" id="sensorBtn" onclick="toggleSensor()">Capteur Motion 📱</button>
+            <button class="btn-act btn-sim" id="t-sim-btn" onclick="addSteps(1000)">Simuler (+1000 Pas) 🏃‍♂️</button>
         </div>
-        <button class="reset-btn" id="t-reset-btn" onclick="resetData()">إعادة ضبط العداد</button>
+        <button class="reset-btn" id="t-reset-btn" onclick="resetData()">Réinitialiser</button>
 
         <div class="badges-card">
-            <h3 id="t-badges-title">🏅 أوسمة الإنجاز</h3>
+            <h3 id="t-badges-title">🏅 Badges</h3>
             <div class="badges-grid">
                 <div class="badge-item" id="badge-1">
                     <div class="badge-icon">👣</div>
-                    <div class="badge-name" id="t-badge1">الخطوة الأولى</div>
+                    <div class="badge-name" id="t-badge1">Premier Pas</div>
                 </div>
                 <div class="badge-item" id="badge-2">
                     <div class="badge-icon">🎯</div>
-                    <div class="badge-name" id="t-badge2">الهدف اليومي</div>
+                    <div class="badge-name" id="t-badge2">Objectif Jour</div>
                 </div>
                 <div class="badge-item badge-unlocked">
                     <div class="badge-icon">🔥</div>
-                    <div class="badge-name" id="t-badge3">المثابر</div>
+                    <div class="badge-name" id="t-badge3">Persévérant</div>
                 </div>
             </div>
         </div>
@@ -353,19 +353,19 @@
     <!-- الصفحة 2: التحليلات -->
     <div id="page-analytics" class="page-content">
         <div class="period-filter">
-            <button class="period-btn active" onclick="setPeriod('7d', this)" id="t-p-7d">7 أيام</button>
-            <button class="period-btn" onclick="setPeriod('30d', this)" id="t-p-30d">30 يوم</button>
-            <button class="period-btn" onclick="setPeriod('6m', this)" id="t-p-6m">6 أشهر</button>
-            <button class="period-btn" onclick="setPeriod('1y', this)" id="t-p-1y">1 سنة</button>
+            <button class="period-btn active" onclick="setPeriod('7d', this)" id="t-p-7d">7 Jours</button>
+            <button class="period-btn" onclick="setPeriod('30d', this)" id="t-p-30d">30 Jours</button>
+            <button class="period-btn" onclick="setPeriod('6m', this)" id="t-p-6m">6 Mois</button>
+            <button class="period-btn" onclick="setPeriod('1y', this)" id="t-p-1y">1 An</button>
         </div>
 
         <div class="analytics-summary">
             <div class="analytics-box">
-                <div class="title" id="t-lbl-avg">المعدل اليومي</div>
+                <div class="title" id="t-lbl-avg">Moyenne</div>
                 <div class="val" id="analyticsAvg">0</div>
             </div>
             <div class="analytics-box">
-                <div class="title" id="t-lbl-total">المجموع الكلي</div>
+                <div class="title" id="t-lbl-total">Total</div>
                 <div class="val" id="analyticsTotal">0</div>
             </div>
         </div>
@@ -378,11 +378,11 @@
     <!-- الصفحة 3: الدوري/المتصدرين -->
     <div id="page-leaderboard" class="page-content">
         <div class="leaderboard">
-            <h3 id="t-lb-title">🏆 المتصدرون أسبوعياً</h3>
-            <div class="player-row"><span>🥇 Amine</span><span>12,400 🪙</span></div>
-            <div class="player-row"><span>🥈 Sarah</span><span>9,800 🪙</span></div>
-            <div class="player-row my-score"><span id="t-user-row">🥉 أنت (حسابك)</span><span id="user-lb">0 🪙</span></div>
-            <div class="player-row"><span>4. Karim</span><span>5,100 🪙</span></div>
+            <h3 id="t-lb-title">🏆 Ligue Hebdomadaire</h3>
+            <div class="player-row"><span>🥇 Amine</span><span>12 400 🪙</span></div>
+            <div class="player-row"><span>🥈 Sarah</span><span>9 800 🪙</span></div>
+            <div class="player-row my-score"><span id="t-user-row">🥉 Vous (Moi)</span><span id="user-lb">0 🪙</span></div>
+            <div class="player-row"><span>4. Karim</span><span>5 100 🪙</span></div>
         </div>
     </div>
 
@@ -392,22 +392,22 @@
 <div class="bottom-nav">
     <button class="nav-item active" onclick="switchPage('home', this)">
         <span class="icon">👟</span>
-        <span id="t-nav-home">الرئيسية</span>
+        <span id="t-nav-home">Maison</span>
     </button>
     <button class="nav-item" onclick="switchPage('analytics', this)">
         <span class="icon">📊</span>
-        <span id="t-nav-analytics">نظرة عامة</span>
+        <span id="t-nav-analytics">Aperçus</span>
     </button>
     <button class="nav-item" onclick="switchPage('leaderboard', this)">
         <span class="icon">⚡</span>
-        <span id="t-nav-lb">الدوري</span>
+        <span id="t-nav-lb">Ligue</span>
     </button>
 </div>
 
 <script>
     let currentSteps = parseInt(localStorage.getItem('stepifi_steps')) || 0;
     let totalDistance = parseFloat(localStorage.getItem('stepifi_dist')) || 0;
-    let currentLang = localStorage.getItem('stepifi_lang') || 'ar';
+    let currentLang = localStorage.getItem('stepifi_lang') || 'fr';
     let isDarkMode = localStorage.getItem('stepifi_theme') === 'dark';
     
     let isSensoring = false;
@@ -425,7 +425,7 @@
     const translations = {
         ar: {
             themeLight: "☀️ ضوء",
-            themeDark: "🌙 كحل",
+            themeDark: "🌙 ظلام",
             cal: "السعرات",
             time: "وقت النشاط",
             dist: "المسافة (Km)",
@@ -453,7 +453,7 @@
             chartDays: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
         },
         fr: {
-            themeLight: "☀️ Light",
+            themeLight: "☀️ Clair",
             themeDark: "🌙 Sombre",
             cal: "Calories",
             time: "Temps Actif",
@@ -461,7 +461,7 @@
             today: "Aujourd'hui 📅",
             goal: "Objectif: 10 000",
             statusInactive: "Niveau d'activité: Inactif",
-            statusActive: "Niveau d me l'activité: Actif 🏃‍♂️",
+            statusActive: "Niveau d'activité: Actif 🏃‍♂️",
             gpsStart: "Suivi GPS 📍",
             gpsStop: "Arrêter GPS 🛑",
             sensorStart: "Capteur Motion 📱",
