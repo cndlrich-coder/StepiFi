@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StepiFi - عداد الخطوات والنقاط</title>
+    <title>StepiFi - عداد الخطوات والأوسمة</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,22 +14,27 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 360px;
         }
         .card {
             background-color: #1e293b;
-            padding: 25px;
+            padding: 20px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             text-align: center;
-            width: 100%;
-            max-width: 350px;
         }
-        h1 { color: #38bdf8; margin-bottom: 15px; font-size: 24px; }
+        h1 { color: #38bdf8; margin: 0 0 15px 0; font-size: 24px; }
         .stat-box {
             background: #334155;
             padding: 12px;
-            margin: 10px 0;
+            margin: 8px 0;
             border-radius: 12px;
         }
         .number { font-size: 28px; font-weight: bold; color: #4ade80; }
@@ -43,12 +48,11 @@
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
-            margin: 10px 0 20px 0;
+            margin: 10px 0;
             width: 100%;
         }
         button:hover { background-color: #7dd3fc; }
         
-        /* تصميم لوحة المتصدرين */
         .leaderboard {
             background-color: #0f172a;
             border-radius: 12px;
@@ -64,38 +68,88 @@
         .player-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 8px 0;
             border-bottom: 1px solid #334155;
             font-size: 14px;
         }
         .player-row:last-child { border-bottom: none; }
         .my-score { color: #38bdf8; font-weight: bold; }
+        .coin-icon { color: #facc15; margin-left: 5px; }
+
+        /* تصميم قسم الأوسمة الجديد */
+        .badges-card {
+            background-color: #1e293b;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: right;
+        }
+        .badges-card h3 { color: #e2e8f0; text-align: center; margin-top: 0; }
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .badge-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #334155;
+            padding: 10px;
+            border-radius: 12px;
+            opacity: 0.3; /* معتمة افتراضياً */
+            transition: opacity 0.3s ease;
+        }
+        .badge-icon { font-size: 30px; margin-bottom: 5px; }
+        .badge-name { font-size: 11px; color: #e2e8f0; text-align: center; }
+        .badge-unlocked { opacity: 1; border: 2px solid #4ade80; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h1>🏃‍♂️ StepiFi</h1>
-    
-    <div class="stat-box">
-        <div>عدد الخطوات اليوم:</div>
-        <div class="number" id="steps">0</div>
+<div class="container">
+    <div class="card">
+        <h1>🏃‍♂️ StepiFi</h1>
+        
+        <div class="stat-box">
+            <div>خطوات اليوم:</div>
+            <div class="number" id="steps">0</div>
+        </div>
+
+        <div class="stat-box">
+            <div>مجموع النقاط:</div>
+            <div class="number points" id="points">0 <span class="coin-icon">🪙</span></div>
+        </div>
+
+        <button onclick="addSteps()">محاكاة مشي (+1000 خطوة)</button>
+
+        <div class="leaderboard">
+            <h3>🏆 المتصدرون أسبوعياً</h3>
+            <div class="player-row"><span>🥇 أمين</span><span>250 <span class="coin-icon">🪙</span></span></div>
+            <div class="player-row"><span>🥈 سارة</span><span>180 <span class="coin-icon">🪙</span></span></div>
+            <div class="player-row my-score"><span>🥉 أنت (حسابك)</span><span id="user-points-lb">0 <span class="coin-icon">🪙</span></span></div>
+            <div class="player-row"><span>4. كريم</span><span>100 <span class="coin-icon">🪙</span></span></div>
+        </div>
     </div>
 
-    <div class="stat-box">
-        <div>مجموع النقاط:</div>
-        <div class="number points" id="points">0 🪙</div>
-    </div>
-
-    <button onclick="addSteps()">محاكاة مشي (1000 خطوة)</button>
-
-    <!-- لوحة المتصدرين -->
-    <div class="leaderboard">
-        <h3>🏆 قائمة المتصدرين أسبوعياً</h3>
-        <div class="player-row"><span>1. أمين 🥇</span><span>250 🪙</span></div>
-        <div class="player-row"><span>2. سارة 🥈</span><span>180 🪙</span></div>
-        <div class="player-row my-score"><span>3. أنت (حسابك) 🥉</span><span id="user-leaderboard-points">0 🪙</span></div>
-        <div class="player-row"><span>4. كريم</span><span>100 🪙</span></div>
+    <!-- قسم الأوسمة الجديد -->
+    <div class="badges-card">
+        <h3>🏅 أوسمة الإنجاز</h3>
+        <div class="badges-grid">
+            <div class="badge-item" id="badge-first">
+                <div class="badge-icon">👣</div>
+                <div class="badge-name">الخطوة الأولى<br>(1K)</div>
+            </div>
+            <div class="badge-item" id="badge-goal">
+                <div class="badge-icon">🎯</div>
+                <div class="badge-name">الهدف اليومي<br>(8K)</div>
+            </div>
+            <div class="badge-item badge-unlocked" id="badge-streak"> <!-- مفتوحة افتراضياً للتوضيح -->
+                <div class="badge-icon">🔥</div>
+                <div class="badge-name">المثابر<br>(3 أيام)</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -110,12 +164,20 @@
             points += 50;
         }
 
+        // تحديث واجهة الخطوات والنقاط
         document.getElementById('steps').innerText = currentSteps.toLocaleString();
-        document.getElementById('points').innerText = points.toLocaleString() + " 🪙";
-        document.getElementById('user-leaderboard-points').innerText = points.toLocaleString() + " 🪙";
+        document.getElementById('points').innerHTML = points.toLocaleString() + ' <span class="coin-icon">🪙</span>';
+        document.getElementById('user-points-lb').innerHTML = points.toLocaleString() + ' <span class="coin-icon">🪙</span>';
+
+        // تفعيل الأوسمة تلقائياً
+        if (currentSteps >= 1000) {
+            document.getElementById('badge-first').classList.add('badge-unlocked');
+        }
+        if (currentSteps >= 8000) {
+            document.getElementById('badge-goal').classList.add('badge-unlocked');
+        }
     }
 </script>
 
 </body>
-    </html>
-    
+</html>
