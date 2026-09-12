@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepiFi - عداد الخطوات والنقاط</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 320px;
+        }
+        h1 { color: #38bdf8; margin-bottom: 20px; }
+        .stat-box {
+            background: #334155;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 12px;
+        }
+        .number { font-size: 32px; font-weight: bold; color: #4ade80; }
+        .points { color: #facc15; }
+        button {
+            background-color: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        button:hover { background-color: #7dd3fc; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🏃‍♂️ StepiFi</h1>
+    
+    <div class="stat-box">
+        <div>عدد الخطوات اليوم:</div>
+        <div class="number" id="steps">0</div>
+    </div>
+
+    <div class="stat-box">
+        <div>مجموع النقاط:</div>
+        <div class="number points" id="points">0 🪙</div>
+    </div>
+
+    <button onclick="addSteps()">محاكاة مشي (1000 خطوة)</button>
+</div>
+
+<script>
+    let currentSteps = 0;
+
+    function addSteps() {
+        currentSteps += 1000;
+        let points = Math.floor(currentSteps / 100) * 1; // كل 100 خطوة = 1 نقطة (1000 خطوة = 10 نقاط)
+
+        // إضافة بونص الهدف اليومي
+        if (currentSteps >= 8000) {
+            points += 50;
+        }
+
+        document.getElementById('steps').innerText = currentSteps.toLocaleString();
+        document.getElementById('points').innerText = points.toLocaleString() + " 🪙";
+    }
+</script>
+
+</body>
+</html>
