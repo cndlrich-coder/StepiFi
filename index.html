@@ -82,7 +82,7 @@
             margin-bottom: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
-        .stat-item .val { font-size: 20px; font-weight: 800; margin-top: 2px; }
+        .stat-item .val { font-size: 20px; font-weight: 800; margin-top: 2px; min-height: 24px; display: block; }
         .stat-item .lbl { font-size: 11px; color: var(--subtext-color); font-weight: 500; }
         .c-orange { color: var(--accent-orange); }
         .c-green { color: var(--accent-green); }
@@ -134,11 +134,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            width: 80%;
+            width: 90%;
         }
 
         .circle-inner .today { font-size: 13px; color: var(--subtext-color); margin-bottom: 4px; font-weight: 500; }
-        .circle-inner .steps-count { font-size: 38px; font-weight: 900; color: var(--accent-blue); line-height: 1.1; }
+        .circle-inner .steps-count { font-size: 38px; font-weight: 900; color: var(--accent-blue); line-height: 1.1; min-height: 42px; }
         .circle-inner .goal-lbl { font-size: 11px; color: var(--subtext-color); margin-top: 6px; }
         .circle-inner .status-lbl { font-size: 10px; color: var(--subtext-color); margin-top: 2px; opacity: 0.8; }
 
@@ -425,6 +425,8 @@
 
     const translations = {
         ar: {
+            themeLight: "☀️ ضوء",
+            themeDark: "🌙 كحل",
             cal: "السعرات",
             time: "وقت النشاط",
             dist: "المسافة (Km)",
@@ -452,6 +454,8 @@
             chartDays: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'اليوم']
         },
         fr: {
+            themeLight: "☀️ Light",
+            themeDark: "🌙 Sombre",
             cal: "Calories",
             time: "Temps Actif",
             dist: "Km",
@@ -479,6 +483,8 @@
             chartDays: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
         },
         en: {
+            themeLight: "☀️ Light",
+            themeDark: "🌙 Dark",
             cal: "Calories",
             time: "Active Time",
             dist: "Distance (Km)",
@@ -520,12 +526,13 @@
     }
 
     function applyTheme() {
+        const t = translations[currentLang];
         if (isDarkMode) {
             document.body.classList.add('dark-mode');
-            document.getElementById('themeBtn').innerText = "🌙 كحل";
+            document.getElementById('themeBtn').innerText = t.themeDark;
         } else {
             document.body.classList.remove('dark-mode');
-            document.getElementById('themeBtn').innerText = "☀️ ضوء";
+            document.getElementById('themeBtn').innerText = t.themeLight;
         }
         if (barChart) initBarChart();
     }
@@ -572,7 +579,8 @@
         document.getElementById('gpsBtn').innerText = isGPSActive ? t.gpsStop : t.gpsStart;
         document.getElementById('sensorBtn').innerText = isSensoring ? t.sensorStop : t.sensorStart;
 
-        if (barChart) initBarChart();
+        applyTheme();
+        updateUI();
     }
 
     function formatNumber(num) {
@@ -756,9 +764,7 @@
     }
 
     document.getElementById('langSelect').value = currentLang;
-    applyTheme();
     changeLanguage(currentLang);
-    updateUI();
 </script>
 
 </body>
