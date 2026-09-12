@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StepiFi</title>
+    <!-- إعدادات لجعل الموقع يعمل كتطبيق هاتف -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         body {
-            font-family: sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background-color: #0f172a;
             color: #ffffff;
             display: flex;
@@ -15,6 +19,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 10px;
+            user-select: none;
         }
         .container { width: 100%; max-width: 360px; }
         .card {
@@ -23,8 +28,9 @@
             border-radius: 20px;
             text-align: center;
             margin-bottom: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        h1 { color: #38bdf8; margin: 0 0 15px 0; }
+        h1 { color: #38bdf8; margin: 0 0 15px 0; font-size: 26px; }
         .stat-box {
             background: #334155;
             padding: 12px;
@@ -38,27 +44,33 @@
             color: #0f172a;
             border: none;
             padding: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            margin: 10px 0;
+            margin: 8px 0;
+            transition: transform 0.1s;
         }
+        button:active { transform: scale(0.98); }
+        .sensor-btn { background-color: #a855f7; color: #fff; }
         .reset-btn {
             background-color: transparent;
             color: #94a3b8;
             font-size: 12px;
             text-decoration: underline;
-            margin-top: 5px;
+            margin-top: 2px;
+            border: none;
+            width: auto;
         }
         .leaderboard {
             background-color: #0f172a;
             border-radius: 12px;
             padding: 12px;
             text-align: right;
+            margin-top: 10px;
         }
-        .leaderboard h3 { color: #facc15; text-align: center; margin: 0 0 10px 0; }
+        .leaderboard h3 { color: #facc15; text-align: center; margin: 0 0 10px 0; font-size: 16px; }
         .player-row {
             display: flex;
             justify-content: space-between;
@@ -71,8 +83,9 @@
             background-color: #1e293b;
             padding: 15px;
             border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        .badges-card h3 { text-align: center; margin: 0 0 10px 0; }
+        .badges-card h3 { text-align: center; margin: 0 0 10px 0; font-size: 16px; }
         .badges-grid { display: flex; justify-content: space-around; }
         .badge-item {
             background: #334155;
@@ -81,10 +94,11 @@
             text-align: center;
             opacity: 0.3;
             width: 70px;
+            transition: all 0.3s;
         }
         .badge-icon { font-size: 24px; }
         .badge-name { font-size: 10px; margin-top: 4px; }
-        .badge-unlocked { opacity: 1; border: 2px solid #4ade80; }
+        .badge-unlocked { opacity: 1; border: 2px solid #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
     </style>
 </head>
 <body>
@@ -100,7 +114,10 @@
             <div>مجموع النقاط:</div>
             <div class="number points" id="points">0 🪙</div>
         </div>
-        <button onclick="addSteps()">محاكاة مشي (+1000 خطوة)</button>
+
+        <button class="sensor-btn" id="sensorBtn" onclick="toggleSensor()">تفعيل عداد حركة الهاتف 📱</button>
+        <button onclick="addSteps(1000)">محاكاة (+1000 خطوة)</button>
+        <br>
         <button class="reset-btn" onclick="resetData()">إعادة ضبط العداد</button>
 
         <div class="leaderboard">
@@ -132,8 +149,9 @@
 </div>
 
 <script>
-    // استرجاع البيانات المحفوظة أو البدء من الصفر
     let currentSteps = parseInt(localStorage.getItem('stepifi_steps')) || 0;
+    let isSensoring = false;
+    let lastAccel = 0;
 
     function updateUI() {
         let points = Math.floor(currentSteps / 100);
@@ -143,16 +161,16 @@
         document.getElementById('points').innerText = points.toLocaleString() + " 🪙";
         document.getElementById('user-lb').innerText = points.toLocaleString() + " 🪙";
 
-        if (currentSteps >= 1000) { document.getElementById('badge-1').classList.add('badge-unlocked'); }
+        if (currentSteps >= 1) { document.getElementById('badge-1').classList.add('badge-unlocked'); }
         else { document.getElementById('badge-1').classList.remove('badge-unlocked'); }
 
         if (currentSteps >= 8000) { document.getElementById('badge-2').classList.add('badge-unlocked'); }
         else { document.getElementById('badge-2').classList.remove('badge-unlocked'); }
     }
 
-    function addSteps() {
-        currentSteps += 1000;
-        localStorage.setItem('stepifi_steps', currentSteps); // حفظ في ذاكرة الهاتف
+    function addSteps(count) {
+        currentSteps += count;
+        localStorage.setItem('stepifi_steps', currentSteps);
         updateUI();
     }
 
@@ -164,10 +182,50 @@
         }
     }
 
-    // تشغيل التحديث فور فتح الصفحة
+    // مستشعر الحركة لقياس المشي الفعلي
+    function toggleSensor() {
+        const btn = document.getElementById('sensorBtn');
+        if (!isSensoring) {
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission().then(response => {
+                    if (response === 'granted') { startMotion(); }
+                });
+            } else if (window.DeviceMotionEvent) {
+                startMotion();
+            } else {
+                alert("مستشعر الحركة غير مدعوم في هذا المتصفح.");
+            }
+        } else {
+            window.removeEventListener('devicemotion', handleMotion);
+            isSensoring = false;
+            btn.innerText = "تفعيل عداد حركة الهاتف 📱";
+            btn.style.backgroundColor = "#a855f7";
+        }
+    }
+
+    function startMotion() {
+        window.addEventListener('devicemotion', handleMotion);
+        isSensoring = true;
+        const btn = document.getElementById('sensorBtn');
+        btn.innerText = "العداد يعمل الآن... (إيقاف) 🛑";
+        btn.style.backgroundColor = "#ef4444";
+    }
+
+    function handleMotion(event) {
+        let acc = event.accelerationIncludingGravity;
+        if (!acc) return;
+        let total = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+        let delta = Math.abs(total - lastAccel);
+        
+        // عتبة اهتزاز تعادل خطوة واحدة
+        if (delta > 11) {
+            addSteps(1);
+        }
+        lastAccel = total;
+    }
+
     updateUI();
 </script>
 
 </body>
-    </html>
-    
+</html>
