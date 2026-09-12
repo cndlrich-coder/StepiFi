@@ -14,37 +14,62 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
         .card {
             background-color: #1e293b;
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             text-align: center;
-            width: 320px;
+            width: 100%;
+            max-width: 350px;
         }
-        h1 { color: #38bdf8; margin-bottom: 20px; }
+        h1 { color: #38bdf8; margin-bottom: 15px; font-size: 24px; }
         .stat-box {
             background: #334155;
-            padding: 15px;
-            margin: 15px 0;
+            padding: 12px;
+            margin: 10px 0;
             border-radius: 12px;
         }
-        .number { font-size: 32px; font-weight: bold; color: #4ade80; }
+        .number { font-size: 28px; font-weight: bold; color: #4ade80; }
         .points { color: #facc15; }
         button {
             background-color: #38bdf8;
             color: #0f172a;
             border: none;
-            padding: 12px 24px;
+            padding: 12px;
             font-size: 16px;
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 10px;
+            margin: 10px 0 20px 0;
             width: 100%;
         }
         button:hover { background-color: #7dd3fc; }
+        
+        /* تصميم لوحة المتصدرين */
+        .leaderboard {
+            background-color: #0f172a;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: right;
+        }
+        .leaderboard h3 {
+            margin-top: 0;
+            color: #facc15;
+            font-size: 16px;
+            text-align: center;
+        }
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 14px;
+        }
+        .player-row:last-child { border-bottom: none; }
+        .my-score { color: #38bdf8; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -63,6 +88,15 @@
     </div>
 
     <button onclick="addSteps()">محاكاة مشي (1000 خطوة)</button>
+
+    <!-- لوحة المتصدرين -->
+    <div class="leaderboard">
+        <h3>🏆 قائمة المتصدرين أسبوعياً</h3>
+        <div class="player-row"><span>1. أمين 🥇</span><span>250 🪙</span></div>
+        <div class="player-row"><span>2. سارة 🥈</span><span>180 🪙</span></div>
+        <div class="player-row my-score"><span>3. أنت (حسابك) 🥉</span><span id="user-leaderboard-points">0 🪙</span></div>
+        <div class="player-row"><span>4. كريم</span><span>100 🪙</span></div>
+    </div>
 </div>
 
 <script>
@@ -70,15 +104,15 @@
 
     function addSteps() {
         currentSteps += 1000;
-        let points = Math.floor(currentSteps / 100) * 1; // كل 100 خطوة = 1 نقطة (1000 خطوة = 10 نقاط)
+        let points = Math.floor(currentSteps / 100) * 1;
 
-        // إضافة بونص الهدف اليومي
         if (currentSteps >= 8000) {
             points += 50;
         }
 
         document.getElementById('steps').innerText = currentSteps.toLocaleString();
         document.getElementById('points').innerText = points.toLocaleString() + " 🪙";
+        document.getElementById('user-leaderboard-points').innerText = points.toLocaleString() + " 🪙";
     }
 </script>
 
