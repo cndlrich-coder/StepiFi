@@ -67,15 +67,23 @@
             transition: background-color 0.3s;
         }
         h1 { color: #38bdf8; margin: 0 0 15px 0; font-size: 26px; }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
         .stat-box {
             background: var(--stat-bg);
-            padding: 12px;
-            margin: 8px 0;
+            padding: 10px;
             border-radius: 12px;
             transition: background-color 0.3s;
         }
-        .number { font-size: 28px; font-weight: bold; color: #22c55e; }
+        .number { font-size: 22px; font-weight: bold; color: #22c55e; }
         .points { color: #eab308; }
+        .gps-val { color: #38bdf8; }
 
         .nav-tabs {
             display: flex;
@@ -107,16 +115,18 @@
             color: #0f172a;
             border: none;
             padding: 12px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            margin: 8px 0;
+            margin: 6px 0;
             transition: transform 0.1s;
         }
         button.action-btn:active { transform: scale(0.98); }
+        .gps-btn { background-color: #10b981; color: #fff; }
         .sensor-btn { background-color: #a855f7; color: #fff; }
+        
         .reset-btn {
             background-color: transparent;
             color: var(--subtext-color);
@@ -125,43 +135,6 @@
             margin-top: 2px;
             border: none;
             cursor: pointer;
-        }
-
-        /* الإحصائيات */
-        .stats-grid {
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .stat-card {
-            flex: 1;
-            background: var(--stat-bg);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-        .stat-val { font-size: 16px; font-weight: bold; color: #38bdf8; margin-top: 4px; }
-
-        /* المتجر */
-        .reward-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--stat-bg);
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
-        .buy-btn {
-            background: #22c55e;
-            color: #fff;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
         }
 
         .leaderboard {
@@ -194,27 +167,42 @@
         </select>
     </div>
 
-    <!-- القائمة الرئيسية للملاحة -->
+    <!-- القائمة الرئيسية -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('home')" id="tab-home-btn">الرئيسية 🏠</button>
         <button class="tab-btn" onclick="switchTab('stats')" id="tab-stats-btn">الإحصائيات 📊</button>
-        <button class="tab-btn" onclick="switchTab('store')" id="tab-store-btn">المتجر 🎁</button>
     </div>
 
     <!-- تبويب الصفحة الرئيسية -->
     <div id="tab-home" class="tab-content active">
         <div class="card">
             <h1>🏃‍♂️ StepiFi</h1>
-            <div class="stat-box">
-                <div id="t-steps-label">خطوات اليوم:</div>
-                <div class="number" id="steps">0</div>
-            </div>
-            <div class="stat-box">
-                <div id="t-points-label">مجموع النقاط:</div>
-                <div class="number points" id="points">0 🪙</div>
+            
+            <div class="grid-2">
+                <div class="stat-box">
+                    <div id="t-steps-label">الخطوات:</div>
+                    <div class="number" id="steps">0</div>
+                </div>
+                <div class="stat-box">
+                    <div id="t-points-label">النقاط:</div>
+                    <div class="number points" id="points">0 🪙</div>
+                </div>
             </div>
 
-            <button class="action-btn sensor-btn" id="sensorBtn" onclick="toggleSensor()">تفعيل عداد حركة الهاتف 📱</button>
+            <!-- بيانات الـ GPS الجديدة -->
+            <div class="grid-2">
+                <div class="stat-box">
+                    <div>المسافة (GPS):</div>
+                    <div class="number gps-val" id="distance">0.0 km</div>
+                </div>
+                <div class="stat-box">
+                    <div>السعرات:</div>
+                    <div class="number gps-val" id="calories">0 kcal</div>
+                </div>
+            </div>
+
+            <button class="action-btn gps-btn" id="gpsBtn" onclick="toggleGPS()">تفعيل تتبع GPS 📍</button>
+            <button class="action-btn sensor-btn" id="sensorBtn" onclick="toggleSensor()">تفعيل مستشعر الحركة 📱</button>
             <button class="action-btn" id="t-sim-btn" onclick="addSteps(1000)">محاكاة (+1000 خطوة)</button>
             <br>
             <button class="reset-btn" id="t-reset-btn" onclick="resetData()">إعادة ضبط العداد</button>
@@ -224,7 +212,6 @@
                 <div class="player-row"><span>🥇 Amine</span><span>250 🪙</span></div>
                 <div class="player-row"><span>🥈 Sarah</span><span>180 🪙</span></div>
                 <div class="player-row my-score"><span id="t-user-row">🥉 أنت (حسابك)</span><span id="user-lb">0 🪙</span></div>
-                <div class="player-row"><span>4. Karim</span><span>100 🪙</span></div>
             </div>
         </div>
     </div>
@@ -232,52 +219,9 @@
     <!-- تبويب الإحصائيات -->
     <div id="tab-stats" class="tab-content">
         <div class="card">
-            <h3 id="t-stats-title">📊 سجل ومعدل النشاط</h3>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div id="t-stat-day">اليوم</div>
-                    <div class="stat-val" id="stat-daily">0</div>
-                </div>
-                <div class="stat-card">
-                    <div id="t-stat-week">الأسبوع</div>
-                    <div class="stat-val" id="stat-weekly">0</div>
-                </div>
-                <div class="stat-card">
-                    <div id="t-stat-month">الشهر</div>
-                    <div class="stat-val" id="stat-monthly">0</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- تبويب المتجر -->
-    <div id="tab-store" class="tab-content">
-        <div class="card">
-            <h3 id="t-store-title">🎁 استبدال النقاط بالمكافآت</h3>
-            
-            <div class="reward-item">
-                <div>
-                    <div>☕ قسيمة قهوة مجانية</div>
-                    <small style="color:var(--subtext-color)">50 🪙</small>
-                </div>
-                <button class="buy-btn" onclick="redeemReward(50, 'قسيمة قهوة')">استبدال</button>
-            </div>
-
-            <div class="reward-item">
-                <div>
-                    <div>🎧 خصم 20% سماعات</div>
-                    <small style="color:var(--subtext-color)">150 🪙</small>
-                </div>
-                <button class="buy-btn" onclick="redeemReward(150, 'خصم السماعات')">استبدال</button>
-            </div>
-
-            <div class="reward-item">
-                <div>
-                    <div>💳 بطاقة هدايا 10$</div>
-                    <small style="color:var(--subtext-color)">500 🪙</small>
-                </div>
-                <button class="buy-btn" onclick="redeemReward(500, 'بطاقة هدايا')">استبدال</button>
-            </div>
+            <h3>📊 إحصائيات النشاط</h3>
+            <p>المسافة الإجمالية: <b id="total-dist" style="color:#38bdf8">0 km</b></p>
+            <p>السعرات المحروقة: <b id="total-cal" style="color:#22c55e">0 kcal</b></p>
         </div>
     </div>
 
@@ -285,75 +229,20 @@
 
 <script>
     let currentSteps = parseInt(localStorage.getItem('stepifi_steps')) || 0;
+    let totalDistance = parseFloat(localStorage.getItem('stepifi_dist')) || 0;
     let currentLang = localStorage.getItem('stepifi_lang') || 'ar';
     let isDarkMode = localStorage.getItem('stepifi_theme') !== 'light';
+    
     let isSensoring = false;
+    let isGPSActive = false;
+    let watchID = null;
+    let lastLat = null;
+    let lastLon = null;
     let lastAccel = 0;
-
-    const translations = {
-        ar: {
-            homeTab: "الرئيسية 🏠",
-            statsTab: "الإحصائيات 📊",
-            storeTab: "المتجر 🎁",
-            stepsLabel: "خطوات اليوم:",
-            pointsLabel: "مجموع النقاط:",
-            sensorStart: "تفعيل عداد حركة الهاتف 📱",
-            sensorStop: "العداد يعمل الآن... (إيقاف) 🛑",
-            simBtn: "محاكاة (+1000 خطوة)",
-            resetBtn: "إعادة ضبط العداد",
-            lbTitle: "🏆 المتصدرون أسبوعياً",
-            userRow: "🥉 أنت (حسابك)",
-            statsTitle: "📊 سجل ومعدل النشاط",
-            statDay: "اليوم",
-            statWeek: "الأسبوع",
-            statMonth: "الشهر",
-            storeTitle: "🎁 استبدال النقاط بالمكافآت",
-            confirmReset: "هل تريد إعادة ضبط الخطوات والنقاط للصفر؟"
-        },
-        fr: {
-            homeTab: "Accueil 🏠",
-            statsTab: "Stats 📊",
-            storeTab: "Boutique 🎁",
-            stepsLabel: "Pas d'aujourd'hui:",
-            pointsLabel: "Total des Points:",
-            sensorStart: "Activer le Capteur 📱",
-            sensorStop: "Capteur Actif... (Arrêter) 🛑",
-            simBtn: "Simulation (+1000 Pas)",
-            resetBtn: "Réinitialiser",
-            lbTitle: "🏆 Classement Hebdo",
-            userRow: "🥉 Vous (Votre Compte)",
-            statsTitle: "📊 Historique d'Activité",
-            statDay: "Aujourd'hui",
-            statWeek: "Semaine",
-            statMonth: "Mois",
-            storeTitle: "🎁 Échanger des Points",
-            confirmReset: "Voulez-vous réinitialiser vos pas et points ?"
-        },
-        en: {
-            homeTab: "Home 🏠",
-            statsTab: "Stats 📊",
-            storeTab: "Store 🎁",
-            stepsLabel: "Today's Steps:",
-            pointsLabel: "Total Points:",
-            sensorStart: "Enable Motion Sensor 📱",
-            sensorStop: "Sensor Active... (Stop) 🛑",
-            simBtn: "Simulate (+1000 Steps)",
-            resetBtn: "Reset Counter",
-            lbTitle: "🏆 Weekly Leaderboard",
-            userRow: "🥉 You (Your Account)",
-            statsTitle: "📊 Activity History",
-            statDay: "Today",
-            statWeek: "Week",
-            statMonth: "Month",
-            storeTitle: "🎁 Redeem Rewards",
-            confirmReset: "Do you want to reset your steps and points?"
-        }
-    };
 
     function switchTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        
         document.getElementById('tab-' + tabName).classList.add('active');
         document.getElementById('tab-' + tabName + '-btn').classList.add('active');
     }
@@ -374,74 +263,99 @@
         applyTheme();
     }
 
-    function changeLanguage(lang) {
-        currentLang = lang;
-        localStorage.setItem('stepifi_lang', lang);
-        document.documentElement.lang = lang;
-        document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-        
-        const t = translations[lang];
-        document.getElementById('tab-home-btn').innerText = t.homeTab;
-        document.getElementById('tab-stats-btn').innerText = t.statsTab;
-        document.getElementById('tab-store-btn').innerText = t.storeTab;
-        document.getElementById('t-steps-label').innerText = t.stepsLabel;
-        document.getElementById('t-points-label').innerText = t.pointsLabel;
-        document.getElementById('t-sim-btn').innerText = t.simBtn;
-        document.getElementById('t-reset-btn').innerText = t.resetBtn;
-        document.getElementById('t-lb-title').innerText = t.lbTitle;
-        document.getElementById('t-user-row').innerText = t.userRow;
-        document.getElementById('t-stats-title').innerText = t.statsTitle;
-        document.getElementById('t-stat-day').innerText = t.statDay;
-        document.getElementById('t-stat-week').innerText = t.statWeek;
-        document.getElementById('t-stat-month').innerText = t.statMonth;
-        document.getElementById('t-store-title').innerText = t.storeTitle;
-
-        const sensorBtn = document.getElementById('sensorBtn');
-        sensorBtn.innerText = isSensoring ? t.sensorStop : t.sensorStart;
-    }
-
     function updateUI() {
         let points = Math.floor(currentSteps / 100);
+        let calories = Math.floor(currentSteps * 0.04);
 
         document.getElementById('steps').innerText = currentSteps.toLocaleString();
         document.getElementById('points').innerText = points.toLocaleString() + " 🪙";
         document.getElementById('user-lb').innerText = points.toLocaleString() + " 🪙";
-
-        // تحديث الإحصائيات
-        document.getElementById('stat-daily').innerText = currentSteps.toLocaleString();
-        document.getElementById('stat-weekly').innerText = (currentSteps * 7).toLocaleString();
-        document.getElementById('stat-monthly').innerText = (currentSteps * 30).toLocaleString();
+        document.getElementById('distance').innerText = totalDistance.toFixed(2) + " km";
+        document.getElementById('calories').innerText = calories + " kcal";
+        
+        document.getElementById('total-dist').innerText = totalDistance.toFixed(2) + " km";
+        document.getElementById('total-cal').innerText = calories + " kcal";
     }
 
     function addSteps(count) {
         currentSteps += count;
+        // حساب تقديري للمسافة عند استخدام زر المحاكاة (كل 1300 خطوة تقريباً = 1 كم)
+        totalDistance += (count * 0.00075);
+        
         localStorage.setItem('stepifi_steps', currentSteps);
+        localStorage.setItem('stepifi_dist', totalDistance);
         updateUI();
     }
 
-    function redeemReward(cost, rewardName) {
-        let points = Math.floor(currentSteps / 100);
-        if (points >= cost) {
-            currentSteps -= (cost * 100);
-            localStorage.setItem('stepifi_steps', currentSteps);
-            updateUI();
-            alert(`تهانينا! تم استبدال ${rewardName} بنجاح 🎉`);
+    // تفعيل وتتبع الـ GPS
+    function toggleGPS() {
+        const btn = document.getElementById('gpsBtn');
+        if (!isGPSActive) {
+            if ("geolocation" in navigator) {
+                watchID = navigator.geolocation.watchPosition(updateGPSPosition, handleGPSError, {
+                    enableHighAccuracy: true,
+                    maximumAge: 1000
+                });
+                isGPSActive = true;
+                btn.innerText = "تتبع GPS يعمل... 📍 (إيقاف)";
+                btn.style.backgroundColor = "#ef4444";
+            } else {
+                alert("GPS غير مدعوم في متصفحك.");
+            }
         } else {
-            alert(`نقاطك غير كافية! تحتاج إلى ${cost} نقطة.`);
+            navigator.geolocation.clearWatch(watchID);
+            isGPSActive = false;
+            btn.innerText = "تفعيل تتبع GPS 📍";
+            btn.style.backgroundColor = "#10b981";
         }
     }
 
+    function updateGPSPosition(position) {
+        let lat = position.coords.latitude;
+        let lon = position.coords.longitude;
+
+        if (lastLat !== null && lastLon !== null) {
+            let dist = calculateDistance(lastLat, lastLon, lat, lon);
+            if (dist > 0.005) { // تحرك أكثر من 5 أمتار
+                totalDistance += dist;
+                currentSteps += Math.round(dist / 0.00075);
+                localStorage.setItem('stepifi_steps', currentSteps);
+                localStorage.setItem('stepifi_dist', totalDistance);
+                updateUI();
+            }
+        }
+        lastLat = lat;
+        lastLon = lon;
+    }
+
+    function handleGPSError(err) {
+        alert("يرجى إعطاء الصلاحية للوصول إلى الموقع الجغرافي (GPS)");
+    }
+
+    // معادلة هافيرسين لحساب المسافة بين نقطتين جغرافيتين بالكيلومتر
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // شعاع الأرض
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
     function resetData() {
-        if(confirm(translations[currentLang].confirmReset)) {
+        if(confirm("هل تريد إعادة ضبط العداد والموقع للصفر؟")) {
             currentSteps = 0;
+            totalDistance = 0;
             localStorage.removeItem('stepifi_steps');
+            localStorage.removeItem('stepifi_dist');
             updateUI();
         }
     }
 
     function toggleSensor() {
         const btn = document.getElementById('sensorBtn');
-        const t = translations[currentLang];
         if (!isSensoring) {
             if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
                 DeviceMotionEvent.requestPermission().then(response => {
@@ -449,13 +363,11 @@
                 });
             } else if (window.DeviceMotionEvent) {
                 startMotion();
-            } else {
-                alert("Sensor not supported");
             }
         } else {
             window.removeEventListener('devicemotion', handleMotion);
             isSensoring = false;
-            btn.innerText = t.sensorStart;
+            btn.innerText = "تفعيل مستشعر الحركة 📱";
             btn.style.backgroundColor = "#a855f7";
         }
     }
@@ -464,7 +376,7 @@
         window.addEventListener('devicemotion', handleMotion);
         isSensoring = true;
         const btn = document.getElementById('sensorBtn');
-        btn.innerText = translations[currentLang].sensorStop;
+        btn.innerText = "المستشعر يعمل... 🛑";
         btn.style.backgroundColor = "#ef4444";
     }
 
@@ -477,9 +389,7 @@
         lastAccel = total;
     }
 
-    document.getElementById('langSelect').value = currentLang;
     applyTheme();
-    changeLanguage(currentLang);
     updateUI();
 </script>
 
