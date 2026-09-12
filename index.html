@@ -45,6 +45,13 @@
             width: 100%;
             margin: 10px 0;
         }
+        .reset-btn {
+            background-color: transparent;
+            color: #94a3b8;
+            font-size: 12px;
+            text-decoration: underline;
+            margin-top: 5px;
+        }
         .leaderboard {
             background-color: #0f172a;
             border-radius: 12px;
@@ -94,6 +101,8 @@
             <div class="number points" id="points">0 🪙</div>
         </div>
         <button onclick="addSteps()">محاكاة مشي (+1000 خطوة)</button>
+        <button class="reset-btn" onclick="resetData()">إعادة ضبط العداد</button>
+
         <div class="leaderboard">
             <h3>🏆 المتصدرون أسبوعياً</h3>
             <div class="player-row"><span>🥇 أمين</span><span>250 🪙</span></div>
@@ -123,9 +132,10 @@
 </div>
 
 <script>
-    let currentSteps = 0;
-    function addSteps() {
-        currentSteps += 1000;
+    // استرجاع البيانات المحفوظة أو البدء من الصفر
+    let currentSteps = parseInt(localStorage.getItem('stepifi_steps')) || 0;
+
+    function updateUI() {
         let points = Math.floor(currentSteps / 100);
         if (currentSteps >= 8000) { points += 50; }
 
@@ -134,9 +144,30 @@
         document.getElementById('user-lb').innerText = points.toLocaleString() + " 🪙";
 
         if (currentSteps >= 1000) { document.getElementById('badge-1').classList.add('badge-unlocked'); }
+        else { document.getElementById('badge-1').classList.remove('badge-unlocked'); }
+
         if (currentSteps >= 8000) { document.getElementById('badge-2').classList.add('badge-unlocked'); }
+        else { document.getElementById('badge-2').classList.remove('badge-unlocked'); }
     }
+
+    function addSteps() {
+        currentSteps += 1000;
+        localStorage.setItem('stepifi_steps', currentSteps); // حفظ في ذاكرة الهاتف
+        updateUI();
+    }
+
+    function resetData() {
+        if(confirm("هل تريد إعادة ضبط الخطوات والنقاط للصفر؟")) {
+            currentSteps = 0;
+            localStorage.removeItem('stepifi_steps');
+            updateUI();
+        }
+    }
+
+    // تشغيل التحديث فور فتح الصفحة
+    updateUI();
 </script>
 
 </body>
-</html>
+    </html>
+    
