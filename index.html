@@ -785,15 +785,16 @@
 
         let now = Date.now();
 
-        if (magnitude > 4.5 && magnitude < lastMagnitude && isPeak) {
-            if ((now - lastStepTime) > 400) { 
+        // الضبط الدقيق الجديد: عتبة 6.0 وفاصل زمني 500ms
+        if (magnitude > 6.0 && magnitude < lastMagnitude && isPeak) {
+            if ((now - lastStepTime) > 500) { 
                 addSteps(1);
                 lastStepTime = now;
                 isPeak = false;
             }
         }
 
-        if (magnitude > 4.5 && magnitude > lastMagnitude) {
+        if (magnitude > 6.0 && magnitude > lastMagnitude) {
             isPeak = true;
         }
 
