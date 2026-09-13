@@ -390,8 +390,9 @@
     let isGPSActive = false;
     let watchID = null;
     let lastLat = null, lastLon = null;
-    let lastAccelMagnitude = 0;
     let lastStepTime = 0;
+    let lastMagnitude = 0;
+    let isPeak = false;
     let barChart = null;
     let currentPeriod = '7d';
 
@@ -727,7 +728,6 @@
         return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
     }
 
-    // خوارزمية محسنة لالتقاط حركة الخطوة الحقيقية
     function toggleSensor() {
         const btn = document.getElementById('sensorBtn');
         const t = translations[currentLang];
@@ -769,46 +769,39 @@
         btn.style.backgroundColor = "#a855f7";
     }
 
-    // متغيرات معالجة حركة القدم الحقيقية
-let lastMagnitude = 0;
-let isPeak = false;
-
-function handleMotion(event) {
-    let acc = event.acceleration;
-    
-    // استخدام التسارع النقي (بدون جاذبية) للحد من تأثير حركة اليد العادية
-    if (!acc || acc.x === null) {
-        acc = event.accelerationIncludingGravity;
-        if (!acc || acc.x === null) return;
-    }
-
-    // حساب قوة الحركة الثلاثية الأبعاد
-    let magnitude = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
-    
-    if (event.accelerationIncludingGravity && !event.acceleration) {
-        magnitude = Math.abs(magnitude - 9.8);
-    }
-
-    let now = Date.now();
-
-    /* 
-       الشروط الجديدة لخطوة المشي الحقيقية:
-       1. Magnitude > 4.5: رفع العتبة من 2.2 إلى 4.5 لمنع احتساب تحريك اليد البسيط.
-       2. Peak Detection: التأكد من الوصول لقمة الحركة (وقع القدم على الأرض) ثم هبوطها.
-       3. Debounce 400ms: المشي البشري الطبيعي يأخذ بين 350ms إلى 600ms للخطوة الواحدة.
-    */
-    if (magnitude > 4.5 && magnitude < lastMagnitude && isPeak) {
-        if ((now - lastStepTime) > 400) { 
-            addSteps(1);
-            lastStepTime = now;
-            isPeak = false; // إعادة ضبط الذروة
+    function handleMotion(event) {
+        let acc = event.acceleration;
+        
+        if (!acc || acc.x === null) {
+            acc = event.accelerationIncludingGravity;
+            if (!acc || acc.x === null) return;
         }
+
+        let magnitude = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+        
+        if (event.accelerationIncludingGravity && !event.acceleration) {
+            magnitude = Math.abs(magnitude - 9.8);
+        }
+
+        let now = Date.now();
+
+        if (magnitude > 4.5 && magnitude < lastMagnitude && isPeak) {
+            if ((now - lastStepTime) > 400) { 
+                addSteps(1);
+                lastStepTime = now;
+                isPeak = false;
+            }
+        }
+
+        if (magnitude > 4.5 && magnitude > lastMagnitude) {
+            isPeak = true;
+        }
+
+        lastMagnitude = magnitude;
     }
 
-    if (magnitude > 4.5 && magnitude > lastMagnitude) {
-        isPeak = true; // تسجيل صعود الحركة نحو الذروة
-    }
+    changeLanguage(currentLang);
+</script>
 
-    lastMagnitude = magnitude;
-    }
-    
+</body>
+</html>
