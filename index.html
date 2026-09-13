@@ -48,7 +48,6 @@
 
         .container { width: 100%; max-width: 390px; }
 
-        /* الشريط العلوي */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -66,11 +65,9 @@
             font-weight: 600;
         }
 
-        /* التبويبات */
         .page-content { display: none; }
         .page-content.active { display: block; }
 
-        /* كارت الإحصائيات العلوية */
         .stats-header {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -87,7 +84,6 @@
         .c-green { color: var(--accent-green); }
         .c-blue { color: var(--accent-blue); }
 
-        /* الحلقة الدائرية */
         .ring-card {
             background: var(--card-bg);
             border-radius: 24px;
@@ -141,15 +137,14 @@
         .circle-inner .goal-lbl { font-size: 11px; color: var(--subtext-color); margin-top: 4px; }
         .circle-inner .status-lbl { font-size: 10px; color: var(--subtext-color); margin-top: 2px; opacity: 0.8; }
 
-        /* الأزرار */
         .controls-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .btn-act {
-            padding: 10px;
+            padding: 12px;
             border-radius: 12px;
             border: none;
             font-weight: bold;
@@ -159,20 +154,7 @@
         }
         .btn-gps { background: #10b981; }
         .btn-sensor { background: #a855f7; }
-        .btn-sim { background: var(--accent-blue); color: #fff; grid-column: span 2; }
 
-        .reset-btn {
-            background-color: transparent;
-            color: var(--subtext-color);
-            font-size: 11px;
-            text-decoration: underline;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 12px;
-        }
-
-        /* شاشة التحليلات */
         .period-filter {
             display: flex;
             background: var(--card-bg);
@@ -218,7 +200,6 @@
             margin-bottom: 15px;
         }
 
-        /* المتصدرين والأوسمة */
         .leaderboard, .badges-card {
             background-color: var(--card-bg);
             border-radius: 20px;
@@ -248,7 +229,6 @@
         .badge-name { font-size: 9px; margin-top: 4px; }
         .badge-unlocked { opacity: 1; border: 2px solid #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.3); }
 
-        /* شريط الملاحة السفلي */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -281,7 +261,6 @@
 
 <div class="container">
     
-    <!-- الشريط العلوي -->
     <div class="top-bar">
         <button class="top-btn" onclick="toggleTheme()" id="themeBtn">☀️ Clair</button>
         <span style="font-weight: 800; font-size: 17px; color: var(--accent-blue);">StepiFi</span>
@@ -327,9 +306,7 @@
         <div class="controls-grid">
             <button class="btn-act btn-gps" id="gpsBtn" onclick="toggleGPS()">Suivi GPS 📍</button>
             <button class="btn-act btn-sensor" id="sensorBtn" onclick="toggleSensor()">Capteur Motion 📱</button>
-            <button class="btn-act btn-sim" id="t-sim-btn" onclick="addSteps(1000)">Simuler (+1000 Pas) 🏃‍♂️</button>
         </div>
-        <button class="reset-btn" id="t-reset-btn" onclick="resetData()">Réinitialiser</button>
 
         <div class="badges-card">
             <h3 id="t-badges-title">🏅 Badges</h3>
@@ -350,13 +327,11 @@
         </div>
     </div>
 
-    <!-- الصفحة 2: التحليلات -->
+    <!-- الصفحة 2: التحليلات الحقيقية -->
     <div id="page-analytics" class="page-content">
         <div class="period-filter">
             <button class="period-btn active" onclick="setPeriod('7d', this)" id="t-p-7d">7 Jours</button>
             <button class="period-btn" onclick="setPeriod('30d', this)" id="t-p-30d">30 Jours</button>
-            <button class="period-btn" onclick="setPeriod('6m', this)" id="t-p-6m">6 Mois</button>
-            <button class="period-btn" onclick="setPeriod('1y', this)" id="t-p-1y">1 An</button>
         </div>
 
         <div class="analytics-summary">
@@ -375,7 +350,7 @@
         </div>
     </div>
 
-    <!-- الصفحة 3: الدوري/المتصدرين -->
+    <!-- الصفحة 3: الدوري -->
     <div id="page-leaderboard" class="page-content">
         <div class="leaderboard">
             <h3 id="t-lb-title">🏆 Ligue Hebdomadaire</h3>
@@ -388,7 +363,6 @@
 
 </div>
 
-<!-- شريط الملاحة السفلي -->
 <div class="bottom-nav">
     <button class="nav-item active" onclick="switchPage('home', this)">
         <span class="icon">👟</span>
@@ -437,8 +411,6 @@
             gpsStop: "توقف GPS 🛑",
             sensorStart: "مستشعر الحركة 📱",
             sensorStop: "إيقاف المستشعر 🛑",
-            simBtn: "محاكاة (+1000 خطوة) 🏃‍♂️",
-            resetBtn: "إعادة ضبط العداد",
             lbTitle: "🏆 الدوري الأسبوعي",
             userRow: "🥉 أنت (حسابك)",
             badgesTitle: "🏅 أوسمة الإنجاز",
@@ -447,9 +419,8 @@
             badge3: "المثابر",
             avgLbl: "المعدل",
             totalLbl: "المجموع",
-            p7d: "7 أيام", p30d: "30 يوماً", p6m: "6 أشهر", p1y: "سنة واحدة",
+            p7d: "7 أيام", p30d: "30 يوماً",
             navHome: "الرئيسية", navAnalytics: "نظرة عامة", navLb: "الدوري",
-            confirmReset: "هل تريد إعادة ضبط العداد للصفر؟",
             chartDays: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
         },
         fr: {
@@ -466,8 +437,6 @@
             gpsStop: "Arrêter GPS 🛑",
             sensorStart: "Capteur Motion 📱",
             sensorStop: "Arrêter Capteur 🛑",
-            simBtn: "Simuler (+1000 Pas) 🏃‍♂️",
-            resetBtn: "Réinitialiser",
             lbTitle: "🏆 Ligue Hebdomadaire",
             userRow: "🥉 Vous (Moi)",
             badgesTitle: "🏅 Badges",
@@ -476,9 +445,8 @@
             badge3: "Persévérant",
             avgLbl: "Moyenne",
             totalLbl: "Total",
-            p7d: "7 Jours", p30d: "30 Jours", p6m: "6 Mois", p1y: "1 An",
+            p7d: "7 Jours", p30d: "30 Jours",
             navHome: "Maison", navAnalytics: "Aperçus", navLb: "Ligue",
-            confirmReset: "Voulez-vous réinitialiser les données ?",
             chartDays: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
         },
         en: {
@@ -495,8 +463,6 @@
             gpsStop: "Stop GPS 🛑",
             sensorStart: "Motion Sensor 📱",
             sensorStop: "Stop Sensor 🛑",
-            simBtn: "Simulate (+1000 Steps) 🏃‍♂️",
-            resetBtn: "Reset Counter",
             lbTitle: "🏆 Weekly League",
             userRow: "🥉 You (Me)",
             badgesTitle: "🏅 Badges",
@@ -505,12 +471,24 @@
             badge3: "Persistent",
             avgLbl: "Average",
             totalLbl: "Total",
-            p7d: "7 Days", p30d: "30 Days", p6m: "6 Months", p1y: "1 Year",
+            p7d: "7 Days", p30d: "30 Days",
             navHome: "Home", navAnalytics: "Overview", navLb: "League",
-            confirmReset: "Do you want to reset all data?",
             chartDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         }
     };
+
+    function getStepHistory() {
+        return JSON.parse(localStorage.getItem('stepifi_history')) || {};
+    }
+
+    function saveStepHistory(history) {
+        localStorage.setItem('stepifi_history', JSON.stringify(history));
+    }
+
+    function getTodayKey() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
 
     function switchPage(pageId, btnElement) {
         document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -554,8 +532,6 @@
         document.getElementById('t-lbl-dist').innerText = t.dist;
         document.getElementById('t-today').innerText = t.today;
         document.getElementById('t-goal').innerText = t.goal;
-        document.getElementById('t-sim-btn').innerText = t.simBtn;
-        document.getElementById('t-reset-btn').innerText = t.resetBtn;
         document.getElementById('t-lb-title').innerText = t.lbTitle;
         document.getElementById('t-user-row').innerText = t.userRow;
         document.getElementById('t-badges-title').innerText = t.badgesTitle;
@@ -567,8 +543,6 @@
         document.getElementById('t-lbl-total').innerText = t.totalLbl;
         document.getElementById('t-p-7d').innerText = t.p7d;
         document.getElementById('t-p-30d').innerText = t.p30d;
-        document.getElementById('t-p-6m').innerText = t.p6m;
-        document.getElementById('t-p-1y').innerText = t.p1y;
 
         document.getElementById('t-nav-home').innerText = t.navHome;
         document.getElementById('t-nav-analytics').innerText = t.navAnalytics;
@@ -598,12 +572,10 @@
 
         document.getElementById('t-status').innerText = currentSteps > 0 ? translations[currentLang].statusActive : translations[currentLang].statusInactive;
 
-        // الحلقة الدائرية
         let percent = Math.min(currentSteps / GOAL_STEPS, 1);
         let offset = CIRCLE_CIRCUMFERENCE - (percent * CIRCLE_CIRCUMFERENCE);
         document.getElementById('progressRing').style.strokeDashoffset = offset;
 
-        // تحديث الأوسمة
         if (currentSteps >= 1) { document.getElementById('badge-1').classList.add('badge-unlocked'); }
         else { document.getElementById('badge-1').classList.remove('badge-unlocked'); }
 
@@ -616,8 +588,15 @@
     function addSteps(count) {
         currentSteps += count;
         totalDistance += (count * 0.00075);
+        
         localStorage.setItem('stepifi_steps', currentSteps);
         localStorage.setItem('stepifi_dist', totalDistance);
+
+        let history = getStepHistory();
+        let today = getTodayKey();
+        history[today] = (history[today] || 0) + count;
+        saveStepHistory(history);
+
         updateUI();
     }
 
@@ -631,26 +610,38 @@
     function initBarChart() {
         const ctx = document.getElementById('barChart').getContext('2d');
         const textColor = isDarkMode ? '#94a3b8' : '#64748b';
+        const history = getStepHistory();
+        const todayKey = getTodayKey();
+
+        history[todayKey] = currentSteps;
 
         let labels = [];
         let data = [];
 
         if (currentPeriod === '7d') {
-            labels = translations[currentLang].chartDays;
-            data = [3100, 2400, 4200, 1500, 2800, 3900, currentSteps];
+            const days = translations[currentLang].chartDays;
+            for (let i = 6; i >= 0; i--) {
+                let d = new Date();
+                d.setDate(d.getDate() - i);
+                let key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                
+                labels.push(days[d.getDay()]);
+                data.push(history[key] || 0);
+            }
         } else if (currentPeriod === '30d') {
-            labels = ['W1', 'W2', 'W3', 'W4'];
-            data = [28000, 35000, 22000, (17900 + currentSteps)];
-        } else if (currentPeriod === '6m') {
-            labels = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6'];
-            data = [120000, 145000, 98000, 160000, 130000, (80000 + currentSteps)];
-        } else if (currentPeriod === '1y') {
-            labels = ['2023', '2024'];
-            data = [1450000, (800000 + currentSteps)];
+            for (let i = 29; i >= 0; i--) {
+                let d = new Date();
+                d.setDate(d.getDate() - i);
+                let key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                
+                labels.push(`${d.getDate()}/${d.getMonth()+1}`);
+                data.push(history[key] || 0);
+            }
         }
 
         let total = data.reduce((a, b) => a + b, 0);
-        let avg = Math.round(total / data.length);
+        let activeDays = data.filter(val => val > 0).length || 1;
+        let avg = Math.round(total / activeDays);
 
         document.getElementById('analyticsAvg').innerText = formatNum(avg);
         document.getElementById('analyticsTotal').innerText = formatNum(total);
@@ -664,8 +655,8 @@
                 datasets: [{
                     data: data,
                     backgroundColor: '#0284c7',
-                    borderRadius: 8,
-                    barThickness: currentPeriod === '7d' ? 20 : 14
+                    borderRadius: 6,
+                    barThickness: currentPeriod === '7d' ? 20 : 6
                 }]
             },
             options: {
@@ -704,10 +695,8 @@
             let dist = calculateDistance(lastLat, lastLon, lat, lon);
             if (dist > 0.005) {
                 totalDistance += dist;
-                currentSteps += Math.round(dist / 0.00075);
-                localStorage.setItem('stepifi_steps', currentSteps);
-                localStorage.setItem('stepifi_dist', totalDistance);
-                updateUI();
+                let added = Math.round(dist / 0.00075);
+                addSteps(added);
             }
         }
         lastLat = lat; lastLon = lon;
@@ -716,7 +705,7 @@
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const dLon = (lon1 - lon2) * Math.PI / 180;
         const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
                   Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                   Math.sin(dLon/2) * Math.sin(dLon/2);
@@ -752,14 +741,6 @@
         let total = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
         if (Math.abs(total - lastAccel) > 11) { addSteps(1); }
         lastAccel = total;
-    }
-
-    function resetData() {
-        if(confirm(translations[currentLang].confirmReset)) {
-            currentSteps = 0; totalDistance = 0;
-            localStorage.clear();
-            updateUI();
-        }
     }
 
     document.getElementById('langSelect').value = currentLang;
