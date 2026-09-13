@@ -769,28 +769,46 @@
         btn.style.backgroundColor = "#a855f7";
     }
 
-    function handleMotion(event) {
-        let acc = event.acceleration || event.accelerationIncludingGravity;
+    // متغيرات معالجة حركة القدم الحقيقية
+let lastMagnitude = 0;
+let isPeak = false;
+
+function handleMotion(event) {
+    let acc = event.acceleration;
+    
+    // استخدام التسارع النقي (بدون جاذبية) للحد من تأثير حركة اليد العادية
+    if (!acc || acc.x === null) {
+        acc = event.accelerationIncludingGravity;
         if (!acc || acc.x === null) return;
+    }
 
-        // حساب القوة الكلية للحركة
-        let magnitude = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
-        
-        // إذا كان يشتمل على الجاذبية، نطرح متوسط الجاذبية (9.8)
-        if (event.accelerationIncludingGravity && !event.acceleration) {
-            magnitude = Math.abs(magnitude - 9.8);
-        }
+    // حساب قوة الحركة الثلاثية الأبعاد
+    let magnitude = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+    
+    if (event.accelerationIncludingGravity && !event.acceleration) {
+        magnitude = Math.abs(magnitude - 9.8);
+    }
 
-        let now = Date.now();
-        // عتبة حساسية مناسبة للمشي الطبيعي (2.2) وفارق زمني لا يقل عن 250 مللي ثانية بين الخطوتين
-        if (magnitude > 2.2 && (now - lastStepTime) > 250) {
+    let now = Date.now();
+
+    /* 
+       الشروط الجديدة لخطوة المشي الحقيقية:
+       1. Magnitude > 4.5: رفع العتبة من 2.2 إلى 4.5 لمنع احتساب تحريك اليد البسيط.
+       2. Peak Detection: التأكد من الوصول لقمة الحركة (وقع القدم على الأرض) ثم هبوطها.
+       3. Debounce 400ms: المشي البشري الطبيعي يأخذ بين 350ms إلى 600ms للخطوة الواحدة.
+    */
+    if (magnitude > 4.5 && magnitude < lastMagnitude && isPeak) {
+        if ((now - lastStepTime) > 400) { 
             addSteps(1);
             lastStepTime = now;
+            isPeak = false; // إعادة ضبط الذروة
         }
     }
 
-    changeLanguage(currentLang);
-</script>
+    if (magnitude > 4.5 && magnitude > lastMagnitude) {
+        isPeak = true; // تسجيل صعود الحركة نحو الذروة
+    }
 
-</body>
-</html>
+    lastMagnitude = magnitude;
+    }
+    
