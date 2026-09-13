@@ -263,9 +263,10 @@
     
     <div class="top-bar">
         <button class="top-btn" onclick="toggleTheme()" id="themeBtn">☀️ Clair</button>
-        <span style="font-weight: 800; font-size: 17px; color: var(--accent-blue);">StepiFi</span>
+        <span id="appTitle" style="font-weight: 800; font-size: 17px; color: var(--accent-blue);">StepiFi</span>
         <select class="top-btn" id="langSelect" onchange="changeLanguage(this.value)">
             <option value="fr">Français 🇫🇷</option>
+
             <option value="ar">العربية 🇸🇦</option>
             <option value="en">English 🇬🇧</option>
         </select>
@@ -398,36 +399,40 @@
 
     const translations = {
         ar: {
+            title: "ستيب فاي",
             themeLight: "☀️ ضوء",
             themeDark: "🌙 ظلام",
-            cal: "السعرات",
+            cal: "سعرات حرارية",
             time: "وقت النشاط",
-            dist: "المسافة (Km)",
+            timeUnit: "دقيقة",
+            dist: "المسافة (كم)",
             today: "اليوم 📅",
-            goal: "الهدف: 10,000",
+            goal: "هدف الخطوات: 10,000",
             statusInactive: "مستوى النشاط: غير نشط",
             statusActive: "مستوى النشاط: نشط 🏃‍♂️",
             gpsStart: "تتبع GPS 📍",
-            gpsStop: "توقف GPS 🛑",
+            gpsStop: "إيقاف GPS 🛑",
             sensorStart: "مستشعر الحركة 📱",
             sensorStop: "إيقاف المستشعر 🛑",
             lbTitle: "🏆 الدوري الأسبوعي",
             userRow: "🥉 أنت (حسابك)",
-            badgesTitle: "🏅 أوسمة الإنجاز",
+            badgesTitle: "🏅 شارات",
             badge1: "الخطوة الأولى",
             badge2: "الهدف اليومي",
-            badge3: "المثابر",
+            badge3: "مثابر",
             avgLbl: "المعدل",
             totalLbl: "المجموع",
             p7d: "7 أيام", p30d: "30 يوماً",
-            navHome: "الرئيسية", navAnalytics: "نظرة عامة", navLb: "الدوري",
+            navHome: "بيت", navAnalytics: "ملخص", navLb: "الدوري",
             chartDays: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
         },
         fr: {
+            title: "StepiFi",
             themeLight: "☀️ Clair",
             themeDark: "🌙 Sombre",
             cal: "Calories",
             time: "Temps Actif",
+            timeUnit: "m",
             dist: "Distance (Km)",
             today: "Aujourd'hui 📅",
             goal: "Objectif: 10 000",
@@ -450,10 +455,12 @@
             chartDays: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
         },
         en: {
+            title: "StepiFi",
             themeLight: "☀️ Light",
             themeDark: "🌙 Dark",
             cal: "Calories",
             time: "Active Time",
+            timeUnit: "m",
             dist: "Distance (Km)",
             today: "Today 📅",
             goal: "Step Goal: 10,000",
@@ -526,7 +533,10 @@
         document.documentElement.lang = lang;
         document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
         
+        document.getElementById('langSelect').value = lang;
+        
         const t = translations[lang];
+        document.getElementById('appTitle').innerText = t.title;
         document.getElementById('t-lbl-cal').innerText = t.cal;
         document.getElementById('t-lbl-time').innerText = t.time;
         document.getElementById('t-lbl-dist').innerText = t.dist;
@@ -567,7 +577,7 @@
         document.getElementById('steps').innerText = formatNum(currentSteps);
         document.getElementById('user-lb').innerText = formatNum(currentSteps) + " 🪙";
         document.getElementById('calories').innerText = formatNum(calories);
-        document.getElementById('activeTime').innerText = minutesActive + "m";
+        document.getElementById('activeTime').innerText = minutesActive + " " + translations[currentLang].timeUnit;
         document.getElementById('distance').innerText = totalDistance.toFixed(1);
 
         document.getElementById('t-status').innerText = currentSteps > 0 ? translations[currentLang].statusActive : translations[currentLang].statusInactive;
@@ -743,7 +753,7 @@
         lastAccel = total;
     }
 
-    document.getElementById('langSelect').value = currentLang;
+    // إجبار المزامنة وتطبيق اللغة المختارة
     changeLanguage(currentLang);
 </script>
 
