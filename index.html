@@ -151,7 +151,9 @@
             font-size: 12px;
             cursor: pointer;
             color: #fff;
+            transition: transform 0.1s;
         }
+        .btn-act:active { transform: scale(0.98); }
         .btn-gps { background: #10b981; }
         .btn-sensor { background: #a855f7; }
 
@@ -266,7 +268,6 @@
         <span id="appTitle" style="font-weight: 800; font-size: 17px; color: var(--accent-blue);">StepiFi</span>
         <select class="top-btn" id="langSelect" onchange="changeLanguage(this.value)">
             <option value="fr">Français 🇫🇷</option>
-
             <option value="ar">العربية 🇸🇦</option>
             <option value="en">English 🇬🇧</option>
         </select>
@@ -328,7 +329,7 @@
         </div>
     </div>
 
-    <!-- الصفحة 2: التحليلات الحقيقية -->
+    <!-- الصفحة 2: التحليلات -->
     <div id="page-analytics" class="page-content">
         <div class="period-filter">
             <button class="period-btn active" onclick="setPeriod('7d', this)" id="t-p-7d">7 Jours</button>
@@ -389,7 +390,8 @@
     let isGPSActive = false;
     let watchID = null;
     let lastLat = null, lastLon = null;
-    let lastAccel = 0;
+    let lastAccelMagnitude = 0;
+    let lastStepTime = 0;
     let barChart = null;
     let currentPeriod = '7d';
 
@@ -412,7 +414,7 @@
             statusActive: "مستوى النشاط: نشط 🏃‍♂️",
             gpsStart: "تتبع GPS 📍",
             gpsStop: "إيقاف GPS 🛑",
-            sensorStart: "مستشعر الحركة 📱",
+            sensorStart: "تشغيل المستشعر 📱",
             sensorStop: "إيقاف المستشعر 🛑",
             lbTitle: "🏆 الدوري الأسبوعي",
             userRow: "🥉 أنت (حسابك)",
@@ -424,6 +426,7 @@
             totalLbl: "المجموع",
             p7d: "7 أيام", p30d: "30 يوماً",
             navHome: "بيت", navAnalytics: "ملخص", navLb: "الدوري",
+            sensorError: "تعذر الوصول للمستشعر، تأكد من منح الإذن للمتصفح.",
             chartDays: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
         },
         fr: {
@@ -452,6 +455,7 @@
             totalLbl: "Total",
             p7d: "7 Jours", p30d: "30 Jours",
             navHome: "Maison", navAnalytics: "Aperçus", navLb: "Ligue",
+            sensorError: "Impossible d'accéder au capteur. Vérifiez les autorisations.",
             chartDays: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
         },
         en: {
@@ -480,6 +484,7 @@
             totalLbl: "Total",
             p7d: "7 Days", p30d: "30 Days",
             navHome: "Home", navAnalytics: "Overview", navLb: "League",
+            sensorError: "Sensor access denied. Please check your browser permissions.",
             chartDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         }
     };
@@ -703,7 +708,7 @@
         let lat = pos.coords.latitude, lon = pos.coords.longitude;
         if (lastLat !== null && lastLon !== null) {
             let dist = calculateDistance(lastLat, lastLon, lat, lon);
-            if (dist > 0.005) {
+            if (dist > 0.003) { 
                 totalDistance += dist;
                 let added = Math.round(dist / 0.00075);
                 addSteps(added);
@@ -722,38 +727,68 @@
         return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
     }
 
+    // خوارزمية محسنة لالتقاط حركة الخطوة الحقيقية
     function toggleSensor() {
         const btn = document.getElementById('sensorBtn');
         const t = translations[currentLang];
+        
         if (!isSensoring) {
             if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-                DeviceMotionEvent.requestPermission().then(resp => { if (resp === 'granted') startMotion(); });
-            } else if (window.DeviceMotionEvent) { startMotion(); }
+                DeviceMotionEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            startMotion();
+                        } else {
+                            alert(t.sensorError);
+                        }
+                    })
+                    .catch(() => alert(t.sensorError));
+            } else if (window.DeviceMotionEvent) {
+                startMotion();
+            } else {
+                alert(t.sensorError);
+            }
         } else {
-            window.removeEventListener('devicemotion', handleMotion);
-            isSensoring = false;
-            btn.innerText = t.sensorStart;
-            btn.style.backgroundColor = "#a855f7";
+            stopMotion();
         }
     }
 
     function startMotion() {
-        window.addEventListener('devicemotion', handleMotion);
+        window.addEventListener('devicemotion', handleMotion, true);
         isSensoring = true;
         const btn = document.getElementById('sensorBtn');
         btn.innerText = translations[currentLang].sensorStop;
         btn.style.backgroundColor = "#ef4444";
     }
 
-    function handleMotion(event) {
-        let acc = event.accelerationIncludingGravity;
-        if (!acc) return;
-        let total = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
-        if (Math.abs(total - lastAccel) > 11) { addSteps(1); }
-        lastAccel = total;
+    function stopMotion() {
+        window.removeEventListener('devicemotion', handleMotion, true);
+        isSensoring = false;
+        const btn = document.getElementById('sensorBtn');
+        btn.innerText = translations[currentLang].sensorStart;
+        btn.style.backgroundColor = "#a855f7";
     }
 
-    // إجبار المزامنة وتطبيق اللغة المختارة
+    function handleMotion(event) {
+        let acc = event.acceleration || event.accelerationIncludingGravity;
+        if (!acc || acc.x === null) return;
+
+        // حساب القوة الكلية للحركة
+        let magnitude = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+        
+        // إذا كان يشتمل على الجاذبية، نطرح متوسط الجاذبية (9.8)
+        if (event.accelerationIncludingGravity && !event.acceleration) {
+            magnitude = Math.abs(magnitude - 9.8);
+        }
+
+        let now = Date.now();
+        // عتبة حساسية مناسبة للمشي الطبيعي (2.2) وفارق زمني لا يقل عن 250 مللي ثانية بين الخطوتين
+        if (magnitude > 2.2 && (now - lastStepTime) > 250) {
+            addSteps(1);
+            lastStepTime = now;
+        }
+    }
+
     changeLanguage(currentLang);
 </script>
 
